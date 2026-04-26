@@ -1,12 +1,193 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <title>Attendance System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    .form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input {
+      padding: 10px;
+      flex: 1;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    button {
+      padding: 10px 15px;
+      border: none;
+      background: #4facfe;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #007bff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background: #4facfe;
+      color: white;
+    }
+
+    .present {
+      background: #28a745;
+    }
+
+    .absent {
+      background: #dc3545;
+    }
+
+    .action-btn {
+      margin: 2px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+
+    .present-btn {
+      background: green;
+      color: white;
+    }
+
+    .absent-btn {
+      background: red;
+      color: white;
+    }
+
+    .delete-btn {
+      background: black;
+      color: white;
+    }
+  </style>
 </head>
+
 <body>
-    <h1>Welcome to My Website</h1>
-    <p>This is a sample HTML document.</p>
+
+<div class="container">
+  <h1>📋 Attendance System</h1>
+
+  <div class="form">
+    <input type="text" id="name" placeholder="Enter Student Name">
+    <button onclick="addStudent()">Add</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
+
+<script>
+  let students = JSON.parse(localStorage.getItem("students")) || [];
+
+  function saveData() {
+    localStorage.setItem("students", JSON.stringify(students));
+  }
+
+  function addStudent() {
+    let name = document.getElementById("name").value.trim();
+
+    if (name === "") {
+      alert("Enter valid name");
+      return;
+    }
+
+    students.push({ name: name, status: "Absent" });
+    document.getElementById("name").value = "";
+    saveData();
+    render();
+  }
+
+  function markPresent(index) {
+    students[index].status = "Present";
+    saveData();
+    render();
+  }
+
+  function markAbsent(index) {
+    students[index].status = "Absent";
+    saveData();
+    render();
+  }
+
+  function deleteStudent(index) {
+    students.splice(index, 1);
+    saveData();
+    render();
+  }
+
+  function render() {
+    let table = document.getElementById("tableBody");
+    table.innerHTML = "";
+
+    students.forEach((student, index) => {
+      let row = `
+        <tr>
+          <td>${student.name}</td>
+          <td class="${student.status === 'Present' ? 'present' : 'absent'}">
+            ${student.status}
+          </td>
+          <td>
+            <button class="action-btn present-btn" onclick="markPresent(${index})">Present</button>
+            <button class="action-btn absent-btn" onclick="markAbsent(${index})">Absent</button>
+            <button class="action-btn delete-btn" onclick="deleteStudent(${index})">Delete</button>
+          </td>
+        </tr>
+      `;
+      table.innerHTML += row;
+    });
+  }
+
+  render();
+</script>
+
 </body>
 </html>
